@@ -60,7 +60,7 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args }) => {
 
     const orderedFlags = countryFlags.map(c => c.bandera).concat(['🚩'])
 
-    const catalogoImg = { url: 'https://files.evogb.win/9BFoEi.jpg' }
+    const catalogoImg = { url: 'https://files.evogb.win/H1fapJ.jpg' }
 
     let messageText = `❄️ 𓆩 𝗣𝗛𝗔𝗡𝗧𝗢𝗠 𝗣𝗟𝗨𝗦 𓆪 ⚡
 
