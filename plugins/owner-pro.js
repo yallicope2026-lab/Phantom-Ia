@@ -2,7 +2,7 @@ import { exec } from "child_process"
 import moment from 'moment-timezone'
 moment.locale('es')
 
-const OWNER_NUMBER = "51927174369@s.whatsapp.net"
+const OWNER_NUMBER = "51916441521@s.whatsapp.net"
 
 let handler = async (m, { conn, command }) => {
     if (m.sender !== OWNER_NUMBER) return
