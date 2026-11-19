@@ -22,12 +22,14 @@ let handler = async (m, { conn }) => {
   try {
     await react('⏳')
     let media = await q.download()
-    if (!media || !media.length) throw new Error('No se pudo descargar el archivo, puede que el mensaje ya fue eliminado')
-    if (media.length > 100 * 1024 * 1024) throw new Error(`Archivo muy pesado (${formatBytes(media.length)}), máximo 100MB`)
-    let link = await myCloud(media)
-    if (!link.url) throw new Error('Sin URL')
+    if (!media || !media.length) throw new Error('No se pudo descargar el archivo')
+    if (media.length > 200 * 1024 * 1024) throw new Error(`Archivo muy pesado (${formatBytes(media.length)}), máximo 200MB`)
 
-    let txt = head + `\n⤷ ┇ 𝐔𝐏𝐋𝐎𝐀𝐃𝐄𝐑 ﹒ COMPLETADO ：✿ 。\n\n.⃟𖥔 ݁. 𖦹˙— \`\`RESULTADO\`\` ❄️ —˙𖦹.꒷\n\n── *📊 DATOS* ╏ ❄️\n🔗 ➛ ${link.url}\n📦 ➛ ${formatBytes(media.length)}\n🖥️ ➛ evogb.win` + foot
+    // Intenta Catbox (permanente) y si falla usa evogb (temporal)
+    let link
+    try { link = await catboxUpload(media) } catch { link = await myCloud(media) }
+
+    let txt = head + `\n⤷ ┇ 𝐔𝐏𝐋𝐎𝐀𝐃𝐄𝐑 ﹒ COMPLETADO ：✿ 。\n\n.⃟𖥔 ݁. 𖦹˙— \`\`RESULTADO\`\` ❄️ —˙𖦹.꒷\n\n── *📊 DATOS* ╏ ❄️\n🔗 ➛ ${link}\n📦 ➛ ${formatBytes(media.length)}\n🖥️ ➛ catbox.moe (PERMANENTE)` + foot
 
     await react('❄️')
     await conn.reply(m.chat, txt, m)
@@ -44,6 +46,21 @@ function formatBytes(bytes) {
   return `${(bytes / 1024 ** i).toFixed(2)} ${sizes[i]}`
 }
 
+// CATBOX = PERMANENTE, NO SE BORRA
+async function catboxUpload(content) {
+  const fileType = await fileTypeFromBuffer(content)
+  const ext = fileType ? fileType.ext : 'bin'
+  const mime = fileType ? fileType.mime : 'application/octet-stream'
+  const formData = new FormData()
+  formData.append("reqtype", "fileupload")
+  formData.append("fileToUpload", new Blob([content], { type: mime }), `${crypto.randomBytes(5).toString("hex")}.${ext}`)
+  const res = await fetch("https://catbox.moe/user/api.php", { method: "POST", body: formData })
+  if (!res.ok) throw new Error('Error en Catbox')
+  const url = await res.text()
+  if (!url.startsWith('https://')) throw new Error('Error en Catbox')
+  return url
+}
+
 async function myCloud(content) {
   const fileType = await fileTypeFromBuffer(content)
   const ext = fileType ? fileType.ext : 'bin'
@@ -52,7 +69,8 @@ async function myCloud(content) {
   formData.append("file", new Blob([content], { type: mime }), `${crypto.randomBytes(5).toString("hex")}.${ext}`)
   const response = await fetch("https://evogb.win/api/upload", { method: "POST", body: formData })
   if (!response.ok) throw new Error('Error en el servidor')
-  return await response.json()
+  let j = await response.json()
+  return j.url
 }
 
 handler.help = ['upp', 'tourl'];
