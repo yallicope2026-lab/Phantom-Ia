@@ -61,9 +61,9 @@ for (const plugin of plugins) {
 }
 
 const userName = m.pushName || 'Usuario'
-const IMG_MENU = 'https://files.evogb.win/9BFoEi.jpg'
+const IMG_MENU = 'https://files.evogb.win/H1fapJ.jpg'
 const ping = Math.round(performance.now() - start)
-const ownerNum = global.owner?.[0]?.[0] || '51927174369'
+const ownerNum = global.owner?.[0]?.[0] || '51916441521'
 const CANAL_LINK = 'https://whatsapp.com/channel/0029Vb8emrOJuyACodGSbP0z'
 
 const hourNow = moment.tz('America/Lima').hour()
